@@ -159,7 +159,7 @@ class BlockWidget extends StatelessWidget {
             SizedBox(height: 10),
             Text("Data/hora: ${formattedDateTime}",
                 style: TextStyle(fontSize: 14)),
-            Text("Nonce: ${block.proof}", style: TextStyle(fontSize: 14)),
+            Text("Proof: ${block.proof}", style: TextStyle(fontSize: 14)),
             Text("Hash do bloco anterior: ${block.previousHash}",
                 style: TextStyle(fontSize: 14)),
             SizedBox(height: 10),

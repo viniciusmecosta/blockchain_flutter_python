@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Blockchain',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
@@ -131,9 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              await mineBlock(
-                  context); // Passando o contexto para a função mineBlock
-              // ...
+              await mineBlock(context);
             },
             icon: Icon(Icons.work),
           ),
