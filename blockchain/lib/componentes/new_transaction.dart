@@ -75,7 +75,7 @@ class _MyFormState extends State<MyForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Formulário com Backend'),
+        title: Text('Nova Transação'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -10,95 +10,104 @@ from flask_cors import CORS
 # Construindo a Blockchain
 
 class Blockchain:
-    def __init__(self):
-        self.chain = []  # Armazena os blocos da blockchain
-        self.transactions = []  # Armazena as transações temporariamente
-        self.create_block(proof=1, previous_hash='0')  # Cria o bloco inicial
-        self.nodes = set()  # Armazena os nós na rede
+    def __init__(blockchain):
+        blockchain.chain = []  # Armazena os blocos da blockchain
+        blockchain.transactions = []  # Armazena as transações temporariamente
+        blockchain.create_block(proof=1, previous_hash='0')  # Cria o bloco inicial
+        blockchain.nodes = set()  # Armazena os nós na rede
 
-    def create_block(self, proof, previous_hash):
+    def create_block(blockchain, proof, previous_hash):
         # Cria um novo bloco na blockchain
         block = {
-            "index": len(self.chain) + 1,
+            "index": len(blockchain.chain) + 1,
             "timestamp": str(datetime.datetime.now()),
             "proof": proof,
             "previous_hash": previous_hash,
-            "transactions": self.transactions,
+            "transactions": blockchain.transactions,
         }
-        hash_value = self.hash(block)
+        hash_value = blockchain.hash(block)
         block["hash"] = hash_value
-        self.transactions = []
-        self.chain.append(block)
+        blockchain.transactions = []
+        blockchain.chain.append(block)
         return block
 
-    def get_previous_block(self):
+    def get_previous_block(blockchain):
         # Obtém o bloco mais recente na blockchain
-        return self.chain[-1]
+        return blockchain.chain[-1]
 
-    def proof_of_work(self, previous_proof):
-        # Implementa o algoritmo de prova de trabalho
+
+    def proof_of_work(blockchain, previous_hash):
         new_proof = 1
         check_proof = False
+        hash_anterior = int(previous_hash, 16) 
+        transactions = blockchain.transactions_int()
         while check_proof is False:
-            hash_operation = hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
-            if hash_operation[:6] == '000000':
+            hash_operation = hashlib.sha256(
+                str(new_proof + hash_anterior + transactions).encode()).hexdigest()
+            if hash_operation[:5] == '00000':
                 check_proof = True
             else:
                 new_proof += 1
         return new_proof
 
-    def hash(self, block):
+    def hash(blockchain, block):
         # Gera o hash do bloco
         encoded_block = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(encoded_block).hexdigest()
 
-    def is_chain_valid(self, chain):
+    def is_chain_valid(blockchain, chain):
         # Verifica a validade da cadeia de blocos
         previous_block = chain[0]
         block_index = 1
+        
         while block_index < len(chain):
             block = chain[block_index]
-            if block["previous_hash"] != self.hash(previous_block):
+            if block["previous_hash"] != blockchain.hash(previous_block):
                 return False
             previous_proof = previous_block["proof"]
             proof = block["proof"]
             hash_operation = hashlib.sha256(str(proof**2 - previous_proof**2).encode()).hexdigest()
-            if hash_operation[:6] != "000000":
+            if hash_operation[:5] != "00000":
                 return False
             previous_block = block
             block_index += 1
         return True
 
-    def add_transactions(self, sender, receiver, amount):
-        # Adiciona uma nova transação à lista de transações
-        self.transactions.append({
+    def add_transactions(blockchain, sender, receiver, amount):
+        blockchain.transactions.append({
             "sender": sender,
             "receiver": receiver,
             "amount": amount
         })
-        previous_block = self.get_previous_block()
+        previous_block = blockchain.get_previous_block()
         return previous_block["index"] + 1
 
-    def add_node(self, address):
+    def add_node(blockchain, address):
         # Adiciona um novo nó à rede
         parsed_url = urlparse(address)
-        self.nodes.add(parsed_url.netloc)
+        blockchain.nodes.add(parsed_url.netloc)
+    
+    
+    def transactions_int(blockchain):
+        # Gera o hash das transações
+        transactions_string = json.dumps(blockchain.transactions, sort_keys=True)
+        return int(hashlib.sha256(transactions_string.encode()).hexdigest(), 16)
 
-    def replace_chain(self):
+    def replace_chain(blockchain):
         # Substitui a cadeia local pela mais longa na rede
-        network = self.nodes
+        network = blockchain.nodes
         longest_chain = None
-        max_length = len(self.chain)
+        max_length = len(blockchain.chain)
         for node in network:
             response = requests.get(f'http://{node}/get_chain')
             if response.status_code == 200:
                 length = response.json()["length"]
                 chain = response.json()["chain"]
-                if length > max_length and self.is_chain_valid(chain):
+                if length > max_length and blockchain.is_chain_valid(chain):
                     max_length = length
                     longest_chain = chain
         if longest_chain:
-            self.chain = longest_chain
+            blockchain.chain = longest_chain
             return True
         return False
 
@@ -116,10 +125,9 @@ blockchain = Blockchain()
 def mine_block():
     # Rota para minerar um novo bloco
     previous_block = blockchain.get_previous_block()
-    previous_proof = previous_block['proof']
     previous_hash = previous_block["hash"]
-    blockchain.add_transactions(sender="Alguem", receiver="Alguem", amount="1000")
-    proof = blockchain.proof_of_work(previous_proof)
+    blockchain.add_transactions(sender="Recompensador", receiver="Minerador", amount=10)
+    proof = blockchain.proof_of_work(previous_hash)
     block = blockchain.create_block(proof, previous_hash)
 
     response = {

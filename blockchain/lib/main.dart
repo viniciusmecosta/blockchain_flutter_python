@@ -66,7 +66,27 @@ Future<void> mineBlock(BuildContext context) async {
               children: [
                 Text('Bloco Número: $blockNumber'),
                 SizedBox(height: 10),
-                Text(message),
+                Text(
+                  message,
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.attach_money, // Ícone de moeda dourada
+                      color: Colors.amber, // Cor dourada
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      'Recompensa: 10 moedas para o minerador',
+                      style: TextStyle(
+                        color: Colors
+                            .black, // Cor verde para destacar a recompensa
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
             actions: <Widget>[
