@@ -11,9 +11,9 @@ from flask_cors import CORS
 
 class Blockchain:
     def __init__(blockchain):
-        blockchain.chain = []  # Armazena os blocos da blockchain
-        blockchain.transactions = []  # Armazena as transações temporariamente
-        blockchain.create_block(proof=1, previous_hash='0')  # Cria o bloco inicial
+        blockchain.chain = []  
+        blockchain.transactions = []
+        blockchain.create_block(proof=1, previous_hash='0000000000000000000000000000')  # Cria o bloco inicial
         blockchain.nodes = set()  # Armazena os nós na rede
 
     def create_block(blockchain, proof, previous_hash):
@@ -51,9 +51,11 @@ class Blockchain:
         return new_proof
 
     def hash(blockchain, block):
-        # Gera o hash do bloco
         encoded_block = json.dumps(block, sort_keys=True).encode()
-        return hashlib.sha256(encoded_block).hexdigest()
+        hashed_result = hashlib.sha256(encoded_block).hexdigest()
+        if hashed_result[0] == '0':
+            hashed_result = '1' + hashed_result[1:]
+        return hashed_result
 
     def is_chain_valid(blockchain, chain):
         # Verifica a validade da cadeia de blocos
@@ -123,7 +125,6 @@ blockchain = Blockchain()
 
 @app.route("/mine_block", methods=['GET'])
 def mine_block():
-    # Rota para minerar um novo bloco
     previous_block = blockchain.get_previous_block()
     previous_hash = previous_block["hash"]
     blockchain.add_transactions(sender="Recompensador", receiver="Minerador", amount=10)

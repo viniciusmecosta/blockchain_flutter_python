@@ -127,10 +127,26 @@ class _BlockchainScreenState extends State<BlockchainScreen> {
   }
 }
 
+// ...
+
+// ...
+
 class BlockWidget extends StatelessWidget {
   final Block block;
 
   const BlockWidget({Key? key, required this.block}) : super(key: key);
+
+  String formatHash(String hash) {
+    // Adiciona zeros à esquerda para completar 5
+    while (hash.length < 5) {
+      hash = '0$hash';
+    }
+    // Adiciona 5 zeros à esquerda
+    hash = '00000$hash';
+    // Remove os últimos cinco dígitos
+    hash = hash.substring(0, hash.length - 5);
+    return hash;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,27 +165,38 @@ class BlockWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Bloco: #${block.index}",
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("Hash do Bloco: ${block.hash}",
-                    style: TextStyle(fontSize: 17, color: Colors.grey)),
+                Text(
+                  "Bloco: #${block.index}",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Hash do Bloco: ${formatHash(block.hash)}",
+                  style: TextStyle(fontSize: 17, color: Colors.grey),
+                ),
               ],
             ),
             SizedBox(height: 10),
-            Text("Data/hora: ${formattedDateTime}",
-                style: TextStyle(fontSize: 14)),
-            Text("Proof: ${block.proof}", style: TextStyle(fontSize: 14)),
-            Text("Hash do bloco anterior: ${block.previousHash}",
-                style: TextStyle(fontSize: 14)),
+            Text(
+              "Data/hora: ${formattedDateTime}",
+              style: TextStyle(fontSize: 14),
+            ),
+            Text(
+              "Proof: ${block.proof}",
+              style: TextStyle(fontSize: 14),
+            ),
+            Text(
+              "Hash do bloco anterior: ${formatHash(block.previousHash)}",
+              style: TextStyle(fontSize: 14),
+            ),
             SizedBox(height: 10),
             Divider(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Transações:",
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  "Transações:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 SizedBox(height: 10),
                 DataTable(
                   columns: const [
@@ -195,3 +222,7 @@ class BlockWidget extends StatelessWidget {
     );
   }
 }
+
+// ...
+
+// ...
