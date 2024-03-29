@@ -14,7 +14,7 @@
   - Implementação da lógica da Blockchain utilizando Python.
 
 - **Frontend (Flutter):**
-  - Interface de usuário para visualização da Blockchain, desenvolvida com Flutter.
+  - Interface de usuário para visualização da Blockchain, desenvolvida utilizando Flutter.
 
  
 ![Captura de Tela (102)](https://github.com/viniciusmecosta/Blockchain/assets/118303495/37294f28-c557-4289-8d55-25ebf0a5eef5)
